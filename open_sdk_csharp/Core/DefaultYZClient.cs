@@ -67,7 +67,7 @@ namespace YZOpenSDK {
                 }
 
                 if (!method.ToUpper().Equals("POST"))
-                    throw new YZException("Method not supported");
+                    throw new YZException("ApiName not supported");
 
                 HttpContent form = null;
                 if (files != null) {
