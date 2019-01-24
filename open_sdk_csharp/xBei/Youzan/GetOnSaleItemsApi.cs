@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using YZOpenSDK.Util;
+using YZOpenSDK.xBei.Youzan.Entrys;
 using YZOpenSDK.xBei.Youzan.Params;
 
 namespace YZOpenSDK.xBei.Youzan {
-    public class GetOnSaleItemsApi : IApi {
+    public class GetOnSaleItemsApi : IApi<YouzanItemsOnsaleGetResult> {
         public string ApiName { get; } = "youzan.items.onsale.get";
         public string Version { get; } = "3.0.0";
         public string Method { get; } = "get";
@@ -16,9 +17,10 @@ namespace YZOpenSDK.xBei.Youzan {
             _args = args;
         }
 
-        public string Execute() {
-            YZClient yzClient = new DefaultYZClient(_auth);
-            var result = yzClient.Invoke(ApiName, Version, Method, _args.GetParams(), null);
+        public ApiResult<YouzanItemsOnsaleGetResult> Execute() {
+            var yzClient = new DefaultYZClient(_auth);
+            var resultStr = yzClient.Invoke(ApiName, Version, Method, _args.GetParams(), null);
+            var result = ApiResult<YouzanItemsOnsaleGetResult>.ParseJson(resultStr);
             return result;
         }
     }
