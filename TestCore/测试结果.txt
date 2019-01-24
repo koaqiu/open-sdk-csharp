@@ -418,4 +418,164 @@
     }
   }
 }
-请按任意键继续. . .
+
+
+  "response": {
+    "item": {
+      "item_id": 451708760,
+      "kdt_id": 42438189,
+      "title": "多规格部分成本价测试2019012417",
+      "desc": "多规格部分成本价测试2019012417 desc",
+      "origin_price": null,
+      "buy_quota": 0,
+      "created": "2019-01-24 18:19:14",
+      "alias": "3ersydxfd7ovh",
+      "cid": 3000000,
+      "tag_ids": [
+        105516826
+      ],
+      "detail_url": "https://h5.youzan.com/v2/showcase/goods?alias=3ersydxfd7ovh&from=wsc&kdtfrom=wsc",
+      "share_url": "https://h5.youzan.com/v2/showcase/goods?alias=3ersydxfd7ovh&from=wsc&kdtfrom=wsc",
+      "pic_url": "https://img.yzcdn.cn/upload_files/2019/01/24/FhZb-S-mq2bdfB1E3g_LoldoB3h6.jpg",
+      "pic_thumb_url": "https://img.yzcdn.cn/upload_files/2019/01/24/FhZb-S-mq2bdfB1E3g_LoldoB3h6.jpg!120x120.jpg",
+      "quantity": 122,
+      "sold_num": 0,
+      "price": 1700,
+      "item_type": 0,
+      "is_listing": false,
+      "is_lock": false,
+      "auto_listing_time": null,
+      "join_level_discount": false,
+      "purchase_right": false,
+      "post_type": 1,
+      "post_fee": 0,
+      "item_no": null,
+      "presale_extend": {
+        "presale_end": null,
+        "etd_start": null,
+        "etd_end": null,
+        "etd_type": 0,
+        "etd_days": 0
+      },
+      "fenxiao_extend": {
+        "supplier_kdt_id": 0,
+        "supplier_goods_id": 0
+      },
+      "hotel_extend": {
+        "service_tel_code": null,
+        "service_tel": null
+      },
+      "virtual_extend": {
+        "item_validity_start": null,
+        "item_validity_end": null,
+        "effective_type": 0,
+        "effective_delay_hours": 0,
+        "holidays_available": false
+      },
+      "delivery_template_info": {
+        "delivery_template_id": 0,
+        "delivery_template_fee": null,
+        "delivery_template_name": null,
+        "delivery_template_valuationType": 0
+      },
+      "skus": [
+        {
+          "item_id": 451708760,
+          "sku_id": 36287244,
+          "sku_unique_code": "45170876036287244",
+          "properties_name_json": "[{\"vid\":596657,\"v\":\"5分\",\"kid\":642703,\"k\":\"甜度\"},{\"vid\":2569,\"v\":\"10g\",\"kid\":497,\"k\":\"净含量\"}]",
+          "with_hold_quantity": 0,
+          "price": 1700,
+          "created": "2019-01-24 18:19:14",
+          "modified": "2019-01-24 18:19:14",
+          "quantity": 13,
+          "item_no": "",
+          "sold_num": 0,
+          "cost_price": 800
+        },
+        {
+          "item_id": 451708760,
+          "sku_id": 36287245,
+          "sku_unique_code": "45170876036287245",
+          "properties_name_json": "[{\"vid\":596657,\"v\":\"5分\",\"kid\":642703,\"k\":\"甜度\"},{\"vid\":426,\"v\":\"20g\",\"kid\":497,\"k\":\"净含量\"}]",
+          "with_hold_quantity": 0,
+          "price": 3000,
+          "created": "2019-01-24 18:19:14",
+          "modified": "2019-01-24 18:19:14",
+          "quantity": 32,
+          "item_no": "",
+          "sold_num": 0,
+          "cost_price": 0
+        },
+        {
+          "item_id": 451708760,
+          "sku_id": 36287242,
+          "sku_unique_code": "45170876036287242",
+          "properties_name_json": "[{\"vid\":606356,\"v\":\"3分\",\"kid\":642703,\"k\":\"甜度\"},{\"vid\":2569,\"v\":\"10g\",\"kid\":497,\"k\":\"净含量\"}]",
+          "with_hold_quantity": 0,
+          "price": 1700,
+          "created": "2019-01-24 18:19:14",
+          "modified": "2019-01-24 18:19:14",
+          "quantity": 23,
+          "item_no": "",
+          "sold_num": 0,
+          "cost_price": 800
+        },
+        {
+          "item_id": 451708760,
+          "sku_id": 36287243,
+          "sku_unique_code": "45170876036287243",
+          "properties_name_json": "[{\"vid\":606356,\"v\":\"3分\",\"kid\":642703,\"k\":\"甜度\"},{\"vid\":426,\"v\":\"20g\",\"kid\":497,\"k\":\"净含量\"}]",
+          "with_hold_quantity": 0,
+          "price": 3000,
+          "created": "2019-01-24 18:19:14",
+          "modified": "2019-01-24 18:19:14",
+          "quantity": 54,
+          "item_no": "",
+          "sold_num": 0,
+          "cost_price": 0
+        }
+      ],
+      "item_imgs": [
+        {
+          "url": "https://img.yzcdn.cn/upload_files/2019/01/24/FhZb-S-mq2bdfB1E3g_LoldoB3h6.jpg",
+          "thumbnail": "https://img.yzcdn.cn/upload_files/2019/01/24/FhZb-S-mq2bdfB1E3g_LoldoB3h6.jpg?imageView2/2/w/290/h/290/q/75/format/jpg",
+          "medium": "https://img.yzcdn.cn/upload_files/2019/01/24/FhZb-S-mq2bdfB1E3g_LoldoB3h6.jpg?imageView2/2/w/600/h/0/q/75/format/jpg",
+          "combine": "https://img.yzcdn.cn/upload_files/2019/01/24/FhZb-S-mq2bdfB1E3g_LoldoB3h6.jpg?imageView2/2/w/600/h/0/q/75/format/jpg",
+          "created": "2019-01-24 23:16:41",
+          "id": 1292764074
+        },
+        {
+          "url": "https://img.yzcdn.cn/upload_files/2019/01/24/Fv3kx335MG8Lrw2gqYUdVoA1vhoY.jpg",
+          "thumbnail": "https://img.yzcdn.cn/upload_files/2019/01/24/Fv3kx335MG8Lrw2gqYUdVoA1vhoY.jpg?imageView2/2/w/290/h/290/q/75/format/jpg",
+          "medium": "https://img.yzcdn.cn/upload_files/2019/01/24/Fv3kx335MG8Lrw2gqYUdVoA1vhoY.jpg?imageView2/2/w/600/h/0/q/75/format/jpg",
+          "combine": "https://img.yzcdn.cn/upload_files/2019/01/24/Fv3kx335MG8Lrw2gqYUdVoA1vhoY.jpg?imageView2/2/w/600/h/0/q/75/format/jpg",
+          "created": "2019-01-24 23:16:41",
+          "id": 1292808215
+        }
+      ],
+      "item_tags": [
+        {
+          "id": 105516826,
+          "type": 1,
+          "alias": "m50b3krh",
+          "tag_url": "https://shop42630357.youzan.com/v2/showcase/tag?alias=m50b3krh",
+          "share_url": "https://shop42630357.youzan.com/v2/showcase/tag?alias=m50b3krh",
+          "item_num": 5,
+          "created": "2019-01-23 10:30:13",
+          "desc": "",
+          "name": "其他"
+        }
+      ],
+      "messages": null,
+      "template": {
+        "template_id": 0,
+        "template_title": "普通版"
+      },
+      "purchase_rightList": null,
+      "sku_images": null,
+      "num": 0,
+      "sell_point": null
+    }
+  }
+}
