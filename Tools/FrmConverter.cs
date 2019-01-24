@@ -21,19 +21,18 @@ namespace Tools {
                 Multiselect = false,
                 CheckFileExists = true,
                 Filter = @"Java文件|*.java",
-                FileName = @"C:\Users\dell\Desktop\open-sdk-java-2.0.4-SNAPSHOT-sources\com\youzan\open\sdk\gen\v3_0_0\model\YouzanItemsOnsaleGetResult.java"
+                // FileName = @"C:\Users\dell\Desktop\open-sdk-java-2.0.4-SNAPSHOT-sources\com\youzan\open\sdk\gen\v3_0_0\model\YouzanItemsOnsaleGetResult.java"
             };
             if (fileOpen.ShowDialog() == DialogResult.OK) {
-                txtInput.Text = File.ReadAllText(fileOpen.FileName);
+                txtInput.Text = File.ReadAllText(fileOpen.FileName).Replace("\n", "\r\n");
                 doConvert();
             }
         }
 
         private void doConvert() {
             var str = txtInput.Text;
-            //public class YouzanItemsOnsaleGetParams implements APIParams, FileParams  {
             var c = findClass(str);
-            txtOut.Text = string.Join("\r\n====", c.Select(cc => cc.ToString()).ToArray());
+            txtOut.Text = string.Join("\r\n", c.Select(cc => cc.ToString()).ToArray());
         }
 
         private List<ClassStruct> findClass(string body) {
@@ -43,7 +42,11 @@ namespace Tools {
             var matches = regClass.Matches(body);
             while (matches.Count > 0) {
                 var match = matches[0];
-                var item = new ClassStruct() { ClassName = match.Groups[1].Value };
+                var item = new ClassStruct {
+                    ClassName = match.Groups[1].Value,
+                    IsParams = match.Value.IndexOf("APIParams", StringComparison.Ordinal) > 0
+                };
+                //APIParams
                 body = body.Substring(match.Index + match.Length);
                 var classBody = "";
                 var dkh = 0;
@@ -78,15 +81,34 @@ namespace Tools {
             }
             var regMember = new Regex("@JsonProperty\\(value = \"(\\w+)\"\\)(.+?)private ([\\w\\[\\]<>,]+) (\\w+);", RegexOptions.Compiled | RegexOptions.Singleline);
             var matches = regMember.Matches(body);
-            foreach (Match match in matches) {
-                var item = new ClassMemberStruct() {
-                    JsonName = match.Groups[1].Value,
-                    Comment = ClassMemberStruct.FixComment(match.Groups[2].Value),
-                    Type = ClassMemberStruct.FixType(match.Groups[3].Value),
-                    Name = match.Groups[4].Value.ToCamel()
-                };
-                list.Add(item);
+            if (matches.Count > 0) {
+                foreach (Match match in matches) {
+                    var item = new ClassMemberStruct() {
+                        JsonName = match.Groups[1].Value,
+                        Comment = ClassMemberStruct.FixComment(match.Groups[2].Value),
+                        Type = ClassMemberStruct.FixType(match.Groups[3].Value),
+                        Name = match.Groups[4].Value.ToCamel()
+                    };
+                    list.Add(item);
+                }
+            } else {
+                //  /**
+                //   *开始出售时间(时间戳格式)，如1541548800，单位秒；默认为0，表示立即出售。
+                //   */
+                //  private Long autoListingTime;
+                var regMember2 = new Regex("/\\*(.+?)\\*/\\s+private ([\\w\\[\\]<>,]+) (\\w+);", RegexOptions.Compiled | RegexOptions.Singleline);
+                matches = regMember2.Matches(body);
+                foreach (Match match in matches) {
+                    var item = new ClassMemberStruct() {
+                        JsonName = match.Groups[3].Value.ToLowerLine(),
+                        Comment = ClassMemberStruct.FixComment(match.Groups[1].Value),
+                        Type = ClassMemberStruct.FixType(match.Groups[2].Value),
+                        Name = match.Groups[3].Value.ToCamel()
+                    };
+                    list.Add(item);
+                }
             }
+
             return list;
         }
 
@@ -94,6 +116,7 @@ namespace Tools {
         public class ClassStruct {
             public string ClassName { get; set; }
             public string Body { get; set; }
+            public bool IsParams { get; set; }
 
             public static string GetTab(int level) {
                 var tab = "";
@@ -105,16 +128,17 @@ namespace Tools {
                 return tab;
             }
             public string ToString(int level = 0) {
-                var members = string.Join("\r\n", Members.Select(m => m.ToString(level + 1)));
+                var members = string.Join("\r\n", Members.Select(m => m.ToString(IsParams, level + 1)));
                 var subclass = string.Join("\r\n\r\n", SubClass.Select(sc => sc.ToString(level + 1)));
                 var tab = GetTab(level);
-                return $"{tab}public class {ClassName} {{\r\n{members}\r\n\r\n{subclass}\r\n{tab}}}";
+                return $"{tab}public class {ClassName} {(IsParams ? ": ApiParams" : "")}{{\r\n{members}\r\n\r\n{subclass}\r\n{tab}}}";
             }
             public IList<ClassStruct> SubClass { get; set; }
             public IList<ClassMemberStruct> Members { get; set; }
         }
 
         public class ClassMemberStruct {
+            public static bool IsDefaultNull { get; set; } = true;
             public string Name { get; set; }
             public string JsonName { get; set; }
             public string Type { get; set; }
@@ -124,22 +148,24 @@ namespace Tools {
                 switch (typeName) {
                     case "Long": return "long";
                     case "String": return "string";
+                    case "Boolean": return "bool";
                     default: return typeName;
                 }
             }
 
             public static IEnumerable<string> FixComment(string comment) {
                 return comment.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(s => Regex.Replace(s, "^[ \\t]+/{0,1}\\*{1,}/{0,1}", ""))
+                    .Select(s => Regex.Replace(s, "^[ \\t]+/{0,1}\\*{1,}/{0,1}", "", RegexOptions.Compiled))
+                    .Select(s => Regex.Replace(s, " {0,}\\*{0,}", "", RegexOptions.Compiled))
                     .Where(s => !string.IsNullOrWhiteSpace(s));
             }
-            public string ToString(int level = 0) {
+            public string ToString(bool isParams, int level = 0) {
                 var tab = ClassStruct.GetTab(level);
                 var s = tab + "/// <summary>\r\n";
-                s += tab + string.Join("\r\n", Comment.Select(str => $"/// {str}")) + "\r\n";
+                s += string.Join("\r\n", Comment.Select(str => $"{tab}/// {str}")).Replace("<", "&lt;").Replace(">", "&gt;") + "\r\n";
                 s += tab + "/// </summary>\r\n";
                 s += $"{tab}[JsonProperty(\"{JsonName}\")]\r\n";
-                s += $"{tab}public {Type} {Name} {{ get; set; }}\r\n";
+                s += $"{tab}public {Type}{(IsDefaultNull && isParams && Type != "string" ? "?" : "")} {Name} {{ get; set; }}\r\n";
                 return s;
 
             }
@@ -148,8 +174,13 @@ namespace Tools {
         #endregion
 
         private void txtOut_DoubleClick(object sender, EventArgs e) {
-           MessageBox.Show("to_string".ToCamel());
+            MessageBox.Show("to_string".ToCamel());
             MessageBox.Show("txtOut_DoubleClick".ToCamel());
+        }
+
+        private void chkBoxDefaultNull_CheckedChanged(object sender, EventArgs e) {
+            ClassMemberStruct.IsDefaultNull = chkBoxDefaultNull.Checked;
+
         }
     }
 

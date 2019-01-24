@@ -26,6 +26,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.txtInput = new System.Windows.Forms.TextBox();
             this.txtOut = new System.Windows.Forms.TextBox();
+            this.chkBoxDefaultNull = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -44,6 +45,7 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.chkBoxDefaultNull);
             this.splitContainer1.Panel2.Controls.Add(this.txtOut);
             this.splitContainer1.Size = new System.Drawing.Size(800, 450);
             this.splitContainer1.SplitterDistance = 400;
@@ -68,14 +70,24 @@
             this.txtOut.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtOut.Location = new System.Drawing.Point(13, 12);
+            this.txtOut.Location = new System.Drawing.Point(13, 47);
             this.txtOut.Multiline = true;
             this.txtOut.Name = "txtOut";
             this.txtOut.ReadOnly = true;
             this.txtOut.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.txtOut.Size = new System.Drawing.Size(371, 426);
+            this.txtOut.Size = new System.Drawing.Size(371, 391);
             this.txtOut.TabIndex = 0;
-            this.txtOut.DoubleClick += new System.EventHandler(this.txtOut_DoubleClick);
+            // 
+            // chkBoxDefaultNull
+            // 
+            this.chkBoxDefaultNull.AutoSize = true;
+            this.chkBoxDefaultNull.Location = new System.Drawing.Point(13, 12);
+            this.chkBoxDefaultNull.Name = "chkBoxDefaultNull";
+            this.chkBoxDefaultNull.Size = new System.Drawing.Size(179, 19);
+            this.chkBoxDefaultNull.TabIndex = 1;
+            this.chkBoxDefaultNull.Text = "请求参数是否默认为空";
+            this.chkBoxDefaultNull.UseVisualStyleBackColor = true;
+            this.chkBoxDefaultNull.CheckedChanged += new System.EventHandler(this.chkBoxDefaultNull_CheckedChanged);
             // 
             // FrmConverter
             // 
@@ -100,6 +112,7 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.TextBox txtInput;
         private System.Windows.Forms.TextBox txtOut;
+        private System.Windows.Forms.CheckBox chkBoxDefaultNull;
     }
 }
 
