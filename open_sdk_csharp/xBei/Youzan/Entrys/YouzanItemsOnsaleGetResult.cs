@@ -4,6 +4,9 @@ using System.Text;
 using Newtonsoft.Json;
 
 namespace YZOpenSDK.xBei.Youzan.Entrys {
+    /// <summary>
+    /// 获取商品类目二维列表
+    /// </summary>
     public class YouzanItemsOnsaleGetResult {
         /// <summary>
         ///  商品列表

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.IO;
+using System.Linq;
 using System.Text;
+using YZOpenSDK.Entrys;
 
 namespace YZOpenSDK {
     public class DefaultYZClient : YZClient {
@@ -12,7 +14,25 @@ namespace YZOpenSDK {
             this.auth = auth;
         }
 
-        public string Invoke(string apiName, string version, string method, IDictionary<string, object> apiParams, List<KeyValuePair<string, string>> files) {
+        public string Invoke(string apiName, string version, string method, IDictionary<string, object> apiParams,
+            IEnumerable<KeyValuePair<string, string>> files) {
+            var list = files?.ToList();
+            return Invoke(apiName, version, method, apiParams,
+                list?.Count() < 1
+                    ? new List<KeyValuePair<string, UploadFile>>()
+                    : list?.Select(file => new KeyValuePair<string, UploadFile>(file.Key, new UploadFile { FileName = file.Value, Content = new FileStream(file.Value, FileMode.Open) }))
+                );
+        }
+        public string Invoke(string apiName, string version, string method, IDictionary<string, object> apiParams,
+            IEnumerable<KeyValuePair<string, FileInfo>> files) {
+            var list = files?.ToList();
+            return Invoke(apiName, version, method, apiParams,
+                list?.Count() < 1
+                    ? new List<KeyValuePair<string, UploadFile>>()
+                    : list?.Select(file => new KeyValuePair<string, UploadFile>(file.Key, new UploadFile { FileName = file.Value.FullName, Content = file.Value.OpenRead() }))
+            );
+        }
+        public string Invoke(string apiName, string version, string method, IDictionary<string, object> apiParams, IEnumerable<KeyValuePair<string, UploadFile>> files) {
             if (string.IsNullOrWhiteSpace(apiName)) {
                 throw new YZException("apiName CAN NOT be null!");
             }
@@ -44,10 +64,10 @@ namespace YZOpenSDK {
             }
             url += "/" + service + "/" + version + "/" + action;
 
-            return SendRequest(url, method, allParams, files);
+            return SendRequest(url, method, allParams, files?.ToList());
         }
 
-        private string SendRequest(string url, string method, IDictionary<string, string> apiParams, IReadOnlyCollection<KeyValuePair<string, string>> files) {
+        private string SendRequest(string url, string method, IDictionary<string, string> apiParams, IList<KeyValuePair<string, UploadFile>> files) {
             using (var httpClient = new HttpClient()) {
                 httpClient.DefaultRequestHeaders.Add("User-Agent", "X-YZ-Client 2.0.0 - CSharp");
                 var builder = new UriBuilder(url);
@@ -70,14 +90,14 @@ namespace YZOpenSDK {
                     throw new YZException("ApiName not supported");
 
                 HttpContent form = null;
-                if (files != null) {
+                if (files?.Count() > 0) {
                     var myForm = new MultipartFormDataContent();
                     foreach (var item in apiParams) {
                         myForm.Add(new StringContent(item.Value, Encoding.UTF8, "application/x-www-form-urlencoded"), item.Key);
                     }
                     foreach (var file in files) {
-                        var content = new StreamContent(new FileStream(file.Value, FileMode.Open));
-                        var fileName = file.Value;
+                        var content = new StreamContent(file.Value.Content);
+                        var fileName = file.Value.FileName;
                         var idx = fileName.LastIndexOf("/", StringComparison.Ordinal) + 1;
                         myForm.Add(content, file.Key, fileName.Substring(idx, fileName.Length - idx));
                     }

@@ -17,6 +17,15 @@ namespace YZOpenSDK.xBei.Youzan {
                         var v = property.GetValue(this);
                         if (canBeNull && v == null)
                             return false;
+
+                        var attributes = property.GetCustomAttributes(false);
+                        foreach (var attribute in attributes) {
+                            if (attribute is MustFillAttribute mfa) {
+                                if (!mfa.IsVaild(v)) {
+                                    throw new Exception($"【{property.Name}】必须填写！");
+                                }
+                            }
+                        }
                         if (property.PropertyType == typeof(string) && string.IsNullOrWhiteSpace(v as string)) return false;
                         return true;
                     })
