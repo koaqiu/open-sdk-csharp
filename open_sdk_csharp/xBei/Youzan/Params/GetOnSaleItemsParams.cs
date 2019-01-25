@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace YZOpenSDK.xBei.Youzan.Params {
+﻿namespace YZOpenSDK.xBei.Youzan.Params {
     public class GetOnSaleItemsParams : ApiParams {
         /// <summary>
         /// 排序方式。格式为column:asc/desc，

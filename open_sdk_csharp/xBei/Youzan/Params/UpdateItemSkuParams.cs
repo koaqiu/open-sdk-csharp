@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
+using YZOpenSDK.xBei.Youzan.Attributes;
 
 namespace YZOpenSDK.xBei.Youzan.Params {
     /// <summary>
@@ -13,6 +14,7 @@ namespace YZOpenSDK.xBei.Youzan.Params {
         /// 商品数字编号
         /// </summary>
         [JsonProperty("item_id")]
+        [MustFill(0L)]
         public long ItemId { get; set; }
 
         /// <summary>
@@ -31,12 +33,13 @@ namespace YZOpenSDK.xBei.Youzan.Params {
         /// sku库存数量
         /// </summary>
         [JsonProperty("quantity")]
-        public string Quantity { get; set; }
+        public int Quantity { get; set; }
 
         /// <summary>
         /// skuid
         /// </summary>
         [JsonProperty("sku_id")]
+        [MustFill(0L)]
         public long SkuId { get; set; }
 
     }

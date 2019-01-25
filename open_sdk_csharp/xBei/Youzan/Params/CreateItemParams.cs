@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using YZOpenSDK.xBei.Youzan.Attributes;
 
 namespace YZOpenSDK.xBei.Youzan.Params {

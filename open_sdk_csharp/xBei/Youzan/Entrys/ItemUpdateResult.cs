@@ -1,7 +1,10 @@
 ﻿using Newtonsoft.Json;
 
 namespace YZOpenSDK.xBei.Youzan.Entrys {
-    public class YouzanItemUpdateListingResult : SimpleResult {
+    /// <summary>
+    /// 更新商品项目返回值
+    /// </summary>
+    public class ItemUpdateResult : SimpleResult {
         /// <summary>
         /// 操作上架的商品id
         /// </summary>

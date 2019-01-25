@@ -12,7 +12,7 @@ namespace YZOpenSDK.xBei.Youzan.Apis.Goods {
 		/// </summary>
 		/// <param name="auth"></param>
 		/// <param name="args"></param>
-		public UpdateItemListing(Auth auth, UpdateItemListingParams args) : base(auth, args) {
+		public UpdateItemListing(Auth auth, SimpleUpdateItemParams args) : base(auth, args) {
 		}
 	}
 }
