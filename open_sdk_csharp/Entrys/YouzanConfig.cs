@@ -7,5 +7,7 @@ namespace YZOpenSDK.Entrys {
         public string KdtId { get; set; }
         public string AppId { get; set; }
         public string AppSecret { get; set; }
+		public string CallBackAddress { get; set; }
+		public bool IsISV { get; set; }
     }
 }
