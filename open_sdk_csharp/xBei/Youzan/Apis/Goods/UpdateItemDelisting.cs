@@ -5,7 +5,7 @@ namespace YZOpenSDK.xBei.Youzan.Apis.Goods {
 	/// <summary>
 	/// 下架商品
 	/// </summary>
-	public class UpdateItemDelisting : AbstractApi<YouzanItemQuantityUpdateResult> {
+	public class UpdateItemDelisting : AbstractApi<YouzanItemUpdateListingResult> {
 		public override string ApiName => "youzan.item.update.delisting";
 		/// <summary>
 		/// 下架商品,取出售中的商品id

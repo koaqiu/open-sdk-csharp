@@ -5,7 +5,7 @@ namespace YZOpenSDK.xBei.Youzan.Apis.Goods {
 	/// <summary>
 	/// 支持全量或增量方式更新SKU库存
 	/// </summary>
-	public class UpdateItemQuantity : AbstractApi<YouzanItemUpdateListingResult> {
+	public class UpdateItemQuantity : AbstractApi<SimpleResult> {
 		public override string ApiName => "youzan.item.quantity.update";
 		/// <summary>
 		/// 支持全量或增量方式更新SKU库存

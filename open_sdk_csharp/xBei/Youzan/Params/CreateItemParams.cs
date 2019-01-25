@@ -5,6 +5,9 @@ using Newtonsoft.Json;
 using YZOpenSDK.xBei.Youzan.Attributes;
 
 namespace YZOpenSDK.xBei.Youzan.Params {
+    /// <summary>
+    /// 新增商品
+    /// </summary>
     public class CreateItemParams : ApiParams {
         /// <summary>
         /// 开始出售时间(时间戳格式)，如1541548800，单位秒；默认为0，表示立即出售。

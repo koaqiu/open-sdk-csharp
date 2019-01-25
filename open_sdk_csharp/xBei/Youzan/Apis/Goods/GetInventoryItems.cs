@@ -7,10 +7,15 @@ using YZOpenSDK.xBei.Youzan.Params;
 
 namespace YZOpenSDK.xBei.Youzan.Apis.Goods {
 	/// <summary>
-	/// 获取仓库中的商品列表,仅返回商品部分信息	
+	/// 获取仓库中的商品列表,仅返回商品部分信息
 	/// </summary>
 	public class GetInventoryItems :AbstractApi<YouzanItemsOnsaleGetResult> {
 		public override string ApiName => "youzan.items.inventory.get";
+        /// <summary>
+        /// 获取仓库中的商品列表,仅返回商品部分信息	
+        /// </summary>
+        /// <param name="auth"></param>
+        /// <param name="args"></param>
 		public GetInventoryItems(Auth auth, GetInventoryItemsParams args) : base(auth, args) {
 		}
 

@@ -1,11 +1,11 @@
 ﻿using Newtonsoft.Json;
 
 namespace YZOpenSDK.xBei.Youzan.Entrys {
-	public class YouzanItemUpdateListingResult {
-		/// <summary>
-		/// 操作是否成功，成功为true
-		/// </summary>
-		[JsonProperty("is_success")]
-		public bool IsSuccess { get; set; }
-	}
+    public class YouzanItemUpdateListingResult : SimpleResult {
+        /// <summary>
+        /// 操作上架的商品id
+        /// </summary>
+        [JsonProperty("item_id")]
+        public int ItemId { get; set; }
+    }
 }

@@ -7,8 +7,15 @@ using System.Text;
 using YZOpenSDK.Entrys;
 
 namespace YZOpenSDK.xBei.Youzan {
+    /// <summary>
+    /// API基类
+    /// </summary>
+    /// <typeparam name="T">返回数据类型</typeparam>
     public abstract class AbstractApi<T> : IApi<T> {
         private const int UPLOAD_FILE_MAX_SIZE = 1024 * 1024;
+        /// <summary>
+        /// API方法
+        /// </summary>
         public virtual string ApiName => "youzan.AbstractApi.get";
         /// <summary>
         /// APi版本：默认填写了3.0.0
