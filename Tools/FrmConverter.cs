@@ -144,6 +144,7 @@ namespace Tools {
 
             public static string FixType(string typeName) {
                 switch (typeName) {
+                    case "Float": return "float";
                     case "Long": return "long";
                     case "String": return "string";
                     case "Boolean": return "bool";
