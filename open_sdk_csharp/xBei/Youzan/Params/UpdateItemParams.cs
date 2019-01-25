@@ -23,6 +23,11 @@ namespace YZOpenSDK.xBei.Youzan.Params {
         public long ItemId { get; set; }
 
         /// <summary>
+        /// 商品标题。不能超过100字，受违禁词控制
+        /// </summary>
+        [JsonProperty("title")]
+        public new string Title { get; set; }
+        /// <summary>
         /// 商家自定义的序号
         /// </summary>
         [JsonProperty("num")]

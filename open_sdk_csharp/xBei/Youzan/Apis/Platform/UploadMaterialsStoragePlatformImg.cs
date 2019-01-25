@@ -8,6 +8,7 @@ using YZOpenSDK.xBei.Youzan.Entrys;
 namespace YZOpenSDK.xBei.Youzan.Apis.Platform {
     /// <summary>
     /// 本地图片上传(http post)，仅支持单个文件上传，每个文件不超过1MB。
+    /// TODO:每次发起10个并发请求最佳
     /// </summary>
     public class UploadMaterialsStoragePlatformImg : AbstractApi<YouzanMaterialsStoragePlatformImgUploadResult> {
         public override string ApiName => "youzan.materials.storage.platform.img.upload";
