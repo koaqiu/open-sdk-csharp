@@ -92,10 +92,6 @@ namespace Tools {
                     list.Add(item);
                 }
             } else {
-                //  /**
-                //   *开始出售时间(时间戳格式)，如1541548800，单位秒；默认为0，表示立即出售。
-                //   */
-                //  private Long autoListingTime;
                 var regMember2 = new Regex("/\\*(.+?)\\*/\\s+private ([\\w\\[\\]<>,]+) (\\w+);", RegexOptions.Compiled | RegexOptions.Singleline);
                 matches = regMember2.Matches(body);
                 foreach (Match match in matches) {
@@ -128,17 +124,19 @@ namespace Tools {
                 return tab;
             }
             public string ToString(int level = 0) {
-                var members = string.Join("\r\n", Members.Select(m => m.ToString(IsParams, level + 1)));
+                var members = string.Join("", Members.Select(m => m.ToString(IsParams, level + 1)));
+                if (!string.IsNullOrWhiteSpace(members)) members += "\r\n";
                 var subclass = string.Join("\r\n\r\n", SubClass.Select(sc => sc.ToString(level + 1)));
+                if (!string.IsNullOrWhiteSpace(subclass)) subclass += "\r\n";
                 var tab = GetTab(level);
-                return $"{tab}public class {ClassName} {(IsParams ? ": ApiParams" : "")}{{\r\n{members}\r\n\r\n{subclass}\r\n{tab}}}";
+                return $"{tab}public class {ClassName} {(IsParams ? ": ApiParams" : "")}{{\r\n{members}{subclass}{tab}}}";
             }
             public IList<ClassStruct> SubClass { get; set; }
             public IList<ClassMemberStruct> Members { get; set; }
         }
 
         public class ClassMemberStruct {
-            public static bool IsDefaultNull { get; set; } = true;
+            public static bool IsDefaultNull { get; set; } = false;
             public string Name { get; set; }
             public string JsonName { get; set; }
             public string Type { get; set; }
@@ -161,13 +159,12 @@ namespace Tools {
             }
             public string ToString(bool isParams, int level = 0) {
                 var tab = ClassStruct.GetTab(level);
-                var s = tab + "/// <summary>\r\n";
+                var s = $"\r\n{tab}/// <summary>\r\n";
                 s += string.Join("\r\n", Comment.Select(str => $"{tab}/// {str}")).Replace("<", "&lt;").Replace(">", "&gt;") + "\r\n";
                 s += tab + "/// </summary>\r\n";
                 s += $"{tab}[JsonProperty(\"{JsonName}\")]\r\n";
                 s += $"{tab}public {Type}{(IsDefaultNull && isParams && Type != "string" ? "?" : "")} {Name} {{ get; set; }}\r\n";
                 return s;
-
             }
         }
 
