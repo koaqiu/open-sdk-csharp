@@ -84,7 +84,7 @@ namespace Tools {
             if (matches.Count > 0) {
                 foreach (Match match in matches) {
                     var item = new ClassMemberStruct() {
-                        JsonName = match.Groups[1].Value,
+                        JsonName = match.Groups[1].Value.ToLowerLine(),
                         Comment = ClassMemberStruct.FixComment(match.Groups[2].Value),
                         Type = ClassMemberStruct.FixType(match.Groups[3].Value),
                         Name = match.Groups[4].Value.ToCamel()
@@ -148,6 +148,7 @@ namespace Tools {
                     case "Long": return "long";
                     case "String": return "string";
                     case "Boolean": return "bool";
+                    case "Date": return "DateTime";
                     default: return typeName;
                 }
             }
