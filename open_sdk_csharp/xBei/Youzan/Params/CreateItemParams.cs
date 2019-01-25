@@ -1,11 +1,41 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using System.Linq;
+using Newtonsoft.Json;
+using YZOpenSDK.xBei.Youzan.Apis.Goods;
 using YZOpenSDK.xBei.Youzan.Attributes;
+using YZOpenSDK.xBei.Youzan.Utils;
 
 namespace YZOpenSDK.xBei.Youzan.Params {
     /// <summary>
     /// 新增商品
     /// </summary>
     public class CreateItemParams : ApiParams {
+        protected override bool isVaild() {
+            var sku = SkuBuilder.Parse(SkuStocks);
+            if (sku != null) {
+                if (sku.Items?.Count < 1) {
+                    throw new Exception("参数“SkuStocks”不合法！，推荐使用“SkuBuilder”创建");
+                }
+                if (!string.IsNullOrWhiteSpace(SkuImages)) {
+                    // 检查SKU图片
+
+                }
+
+                if (!string.IsNullOrWhiteSpace(SkuWeight)) {
+                    // 检查SKU 重量
+                    var skuWeightCount = SkuWeight
+                        .Split(',')
+                        .Select(s => int.TryParse(s, out var num) ? num : 0)
+                        .Count(n => n > 0);
+                    if (skuWeightCount != sku.Items?.Count) {
+                        throw new Exception($"参数“SkuWeight”不合法，有无效数据或者数量不对，必须要有{sku.Items.Count}个重量");
+                    }
+                }
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// 开始出售时间(时间戳格式)，如1541548800，单位秒；默认为0，表示立即出售。
         /// </summary>
@@ -20,6 +50,7 @@ namespace YZOpenSDK.xBei.Youzan.Params {
 
         /// <summary>
         /// 商品分类的叶子类目id，可通过类目列表接口https://open.youzan.com/apilist/detail/group_item/item_category/youzan.itemcategories.get查询获得。
+        /// <see cref="GetItemCategories"/>
         /// </summary>
         [JsonProperty("cid")]
         [MustFill(0L)]
@@ -65,7 +96,7 @@ namespace YZOpenSDK.xBei.Youzan.Params {
         /// 是否隐藏商品库存。在商品展示时不显示商品的库存，默认0显示库存，设置为1不显示库存
         /// </summary>
         [JsonProperty("hide_stock")]
-        public long HideStock { get; set; }
+        public int HideStock { get; set; }
 
         /// <summary>
         /// 酒店扩展信息，按以下格式：
@@ -87,7 +118,7 @@ namespace YZOpenSDK.xBei.Youzan.Params {
         /// 是否上架商品。默认1上架商品，设置为0不上架商品，放入仓库
         /// </summary>
         [JsonProperty("is_display")]
-        public long IsDisplay { get; set; }
+        public int IsDisplay { get; set; }
 
         /// <summary>
         /// 商品货号（商家为商品设置的外部编号）
@@ -103,13 +134,13 @@ namespace YZOpenSDK.xBei.Youzan.Params {
         /// 61：电子卡券
         /// </summary>
         [JsonProperty("item_type")]
-        public long ItemType { get; set; }
+        public int ItemType { get; set; }
 
         /// <summary>
         /// 商品重量，没有SKU时用
         /// </summary>
         [JsonProperty("item_weight")]
-        public long ItemWeight { get; set; }
+        public int ItemWeight { get; set; }
 
         /// <summary>
         /// 商品sku扩展信息，组装成一个JSON,与sku_stocks参数匹配。
@@ -185,7 +216,8 @@ namespace YZOpenSDK.xBei.Youzan.Params {
         /// 价格，单位分，如传入11100表示111元
         /// </summary>
         [JsonProperty("price")]
-        public long? Price { get; set; }
+        [MustFill(0)]
+        public int Price { get; set; }
 
         /// <summary>
         /// 是否设置商品购买权限
@@ -200,7 +232,7 @@ namespace YZOpenSDK.xBei.Youzan.Params {
         public long Quantity { get; set; }
 
         /// <summary>
-        /// 商品卖点信息
+        /// 商品卖点信息，建议60字以内
         /// </summary>
         [JsonProperty("sell_point")]
         public string SellPoint { get; set; }
@@ -208,6 +240,7 @@ namespace YZOpenSDK.xBei.Youzan.Params {
         /// <summary>
         /// SKU图片，仅支持第一级规格，
         /// 参数一定要与sku_stocks参数匹配，
+        /// 建议尺寸：800 x 800像素
         /// 如sku_stocks参数是这样的
         /// [
         ///     {"price":10000,"quantity":100,"item_no":"MOYU-1","skus":[{"k":"颜色","v":"绿色",},{"k":"尺寸","v":"l",},{"k":"内存","v":"1024G",}]},
@@ -243,7 +276,9 @@ namespace YZOpenSDK.xBei.Youzan.Params {
         public string SkuStocks { get; set; }
 
         /// <summary>
-        /// SKU重量带有SKU时用
+        /// SKU重量带有SKU时用（单位是g）
+        /// 要设置物流模板，否则无效。
+        /// SKU设置了多少条就要多少个
         /// 按如下格式
         /// “100，200”
         /// 由重量组成并且和SKU对应

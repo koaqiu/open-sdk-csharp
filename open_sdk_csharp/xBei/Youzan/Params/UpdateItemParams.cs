@@ -27,6 +27,14 @@ namespace YZOpenSDK.xBei.Youzan.Params {
         /// </summary>
         [JsonProperty("title")]
         public new string Title { get; set; }
+
+        /// <summary>
+        /// 价格，单位分，如传入11100表示111元
+        /// </summary>
+        [JsonProperty("price")]
+        [OverrideFill]
+        public new int Price { get; set; }
+
         /// <summary>
         /// 商家自定义的序号
         /// </summary>
