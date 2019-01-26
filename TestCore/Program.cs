@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using YZOpenSDK;
 using YZOpenSDK.Entrys;
 using YZOpenSDK.Util;
+using YZOpenSDK.xBei.Helper;
 using YZOpenSDK.xBei.Youzan.Apis.Goods;
 using YZOpenSDK.xBei.Youzan.Apis.Logistics;
 using YZOpenSDK.xBei.Youzan.Apis.Platform;
@@ -15,16 +15,18 @@ namespace TestCore {
     internal class Program {
         private static void Main(string[] args) {
             var config = getConfig();
+            HttpClientService.Init();
+
             var auth = new Token(config, new FileCache());
-            try {
-                testUpdateItem2(auth);
+            try
+            {
+                testSearchLogisticsTemplate(auth);
+                testGetItem(auth);
             } catch (Exception ex) {
                 Console.WriteLine("发生错误：");
                 Console.WriteLine(ex.Message);
                 Console.ReadLine();
             }
-
-            // testCreateGoodsItem2(auth);
         }
         private static void testSearchLogisticsTemplate(Auth auth) {
             var result = new SearchLogisticsTemplate(auth, new SearchLogisticsTemplateParams {

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using YZOpenSDK.Entrys;
+using YZOpenSDK.xBei.Helper;
 
 namespace YZOpenSDK {
     public class DefaultYZClient : YZClient {
@@ -68,51 +69,48 @@ namespace YZOpenSDK {
         }
 
         private string SendRequest(string url, string method, IDictionary<string, string> apiParams, IList<KeyValuePair<string, UploadFile>> files) {
-            using (var httpClient = new HttpClient()) {
-                httpClient.DefaultRequestHeaders.Add("User-Agent", "X-YZ-Client 2.0.0 - CSharp");
-                var builder = new UriBuilder(url);
-                if (method.ToUpper().Equals("GET")) {
-                    var query = new StringBuilder();
-                    foreach (var item in apiParams) {
-                        query.AppendFormat("{0}={1}&", item.Key, item.Value);
-                    }
-                    builder.Query = query.ToString();
-                    var reqUrl = builder.ToString();
-                    var getResult = httpClient.GetAsync(reqUrl).Result;
-                    //Console.WriteLine(reqUrl);
-                    if (getResult.IsSuccessStatusCode) {
-                        return getResult.Content.ReadAsStringAsync().Result;
-                    }
-                    throw new YZException("Internal server error, code: " + getResult.StatusCode);
+            var httpClient = HttpClientService.GetClient();
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "X-YZ-Client 2.0.0 - CSharp");
+            var builder = new UriBuilder(url);
+            if (method.ToUpper().Equals("GET")) {
+                var query = new StringBuilder();
+                foreach (var item in apiParams) {
+                    query.AppendFormat("{0}={1}&", item.Key, item.Value);
                 }
-
-                if (!method.ToUpper().Equals("POST"))
-                    throw new YZException("ApiName not supported");
-
-                HttpContent form = null;
-                if (files?.Count() > 0) {
-                    var myForm = new MultipartFormDataContent();
-                    foreach (var item in apiParams) {
-                        myForm.Add(new StringContent(item.Value, Encoding.UTF8, "application/x-www-form-urlencoded"), item.Key);
-                    }
-                    foreach (var file in files) {
-                        var content = new StreamContent(file.Value.Content);
-                        var fileName = file.Value.FileName;
-                        var idx = fileName.LastIndexOf("/", StringComparison.Ordinal) + 1;
-                        myForm.Add(content, file.Key, fileName.Substring(idx, fileName.Length - idx));
-                    }
-                    form = myForm;
-                } else {
-                    form = new FormUrlEncodedContent(apiParams);
+                builder.Query = query.ToString();
+                var reqUrl = builder.ToString();
+                var getResult = httpClient.GetAsync(reqUrl).Result;
+                //Console.WriteLine(reqUrl);
+                if (getResult.IsSuccessStatusCode) {
+                    return getResult.Content.ReadAsStringAsync().Result;
                 }
-
-                var postResult = httpClient.PostAsync(url, form).Result;
-                if (postResult.IsSuccessStatusCode) {
-                    return postResult.Content.ReadAsStringAsync().Result;
-                }
-                throw new YZException("Internal server error, code: " + postResult.StatusCode);
-
+                throw new YZException("Internal server error, code: " + getResult.StatusCode);
             }
+
+            if (!method.ToUpper().Equals("POST"))
+                throw new YZException("ApiName not supported");
+            HttpContent form = null;
+            if (files?.Count() > 0) {
+                var myForm = new MultipartFormDataContent();
+                foreach (var item in apiParams) {
+                    myForm.Add(new StringContent(item.Value, Encoding.UTF8, "application/x-www-form-urlencoded"), item.Key);
+                }
+                foreach (var file in files) {
+                    var content = new StreamContent(file.Value.Content);
+                    var fileName = file.Value.FileName;
+                    var idx = fileName.LastIndexOf("/", StringComparison.Ordinal) + 1;
+                    myForm.Add(content, file.Key, fileName.Substring(idx, fileName.Length - idx));
+                }
+                form = myForm;
+            } else {
+                form = new FormUrlEncodedContent(apiParams);
+            }
+
+            var postResult = httpClient.PostAsync(url, form).Result;
+            if (postResult.IsSuccessStatusCode) {
+                return postResult.Content.ReadAsStringAsync().Result;
+            }
+            throw new YZException("Internal server error, code: " + postResult.StatusCode);
         }
 
         private IDictionary<string, string> GetSign(IDictionary<string, string> apiParams) {
