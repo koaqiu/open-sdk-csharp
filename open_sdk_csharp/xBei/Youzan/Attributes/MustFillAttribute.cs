@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace YZOpenSDK.xBei.Youzan.Attributes {
+    [AttributeUsage(AttributeTargets.Property)]
     public class MustFillAttribute : Attribute {
         private readonly long _dvLong;
         private readonly string _dvString;
