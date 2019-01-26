@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using YZOpenSDK;
 using YZOpenSDK.Entrys;
 using YZOpenSDK.Util;
@@ -18,22 +20,51 @@ namespace TestCore {
             HttpClientService.Init();
 
             var auth = new Token(config, new FileCache());
-            try
-            {
-                testSearchLogisticsTemplate(auth);
-                testGetItem(auth);
+            try {
+                //var tasklist = new List<Task>();
+                //Console.WriteLine("RUN testSearchLogisticsTemplate...");
+                //tasklist.Add(testSearchLogisticsTemplate(auth));
+                //Console.WriteLine("RUN testGetItem...");
+                //tasklist.Add(testGetItem(auth));
+                //testGetInventoryItems(auth);
+                //Task.WaitAll(tasklist.ToArray());
+                //var img =
+                //    new UploadMaterialsStoragePlatformImg(auth, UploadFile.Create(@"C:\Users\dell\Downloads\6a31436c9bf326ba5721a38dda1103c6.jpg"))
+                //        .Execute();
+                //Console.WriteLine(img);
+                var result = new UpdateItem(auth, new UpdateItemParams() {
+                    ItemId = 451762956,
+                    SkuStocks = new SkuBuilder()
+                        .AddItem(1, 1, new[] { "CPU", "I7", "内存", "8G" })
+                        .AddItem(1, 1, new[] { "CPU", "I6", "内存", "4G" })
+                        .AddItem(1, 1, new[] { "CPU", "I7", "内存", "4G" })
+                        .AddItem(1, 1, new[] { "CPU", "I6", "内存", "8G" })
+                        .ToJson(),
+                    SkuImages = new SkuImageBuilder()
+                        .AddItem("8G", "http://www.cgart.cn/zt/ANNI/food/kaffe_2000X2000.png")
+                        .AddItem("4G","1293905451")
+                        .ToJson(),
+                    Cid = 3000000,
+                    IsDisplay = 1,
+                }).Execute();
+                Console.WriteLine(result);
+
             } catch (Exception ex) {
                 Console.WriteLine("发生错误：");
                 Console.WriteLine(ex.Message);
                 Console.ReadLine();
             }
         }
-        private static void testSearchLogisticsTemplate(Auth auth) {
-            var result = new SearchLogisticsTemplate(auth, new SearchLogisticsTemplateParams {
-                PageNo = 1,
-                PageSize = 10
-            }).Execute();
-            Console.WriteLine(result);
+        private static Task testSearchLogisticsTemplate(Auth auth) {
+            return Task.Run(async () => {
+                var result = await new SearchLogisticsTemplate(auth, new SearchLogisticsTemplateParams {
+                    PageNo = 1,
+                    PageSize = 10
+                }).ExecuteAsync();
+                Console.WriteLine("RUN testSearchLogisticsTemplate　OK：");
+                Console.WriteLine(result);
+            });
+
         }
         private static void testUpdateItemSku(Auth auth) {
             var result = new UpdateItemSku(auth, new UpdateItemSkuParams {
@@ -73,11 +104,14 @@ namespace TestCore {
             }).Execute();
             Console.WriteLine(result);
         }
-        private static void testGetItem(Auth auth) {
-            var result = new GetItem(auth, new GetItemParams {
-                ItemId = 451708760
-            }).Execute();
-            Console.WriteLine(result);
+        private static Task testGetItem(Auth auth) {
+            return Task.Run(async () => {
+                var result = await new GetItem(auth, new GetItemParams {
+                    ItemId = 451708760
+                }).ExecuteAsync();
+                Console.WriteLine("RUN testGetItem OK:");
+                Console.WriteLine(result);
+            });
         }
         private static void testCreateGoodsItem(Auth auth) {
             //youzanItemCreateParams.setTitle("多规格部分成本价测试2019011802");
@@ -165,6 +199,7 @@ namespace TestCore {
             };
             var api = new GetInventoryItems(auth, param);
             var resultStr = api.Execute();
+            Console.WriteLine("testGetInventoryItems:");
             Console.WriteLine(resultStr);
         }
 

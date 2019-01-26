@@ -17,6 +17,8 @@ namespace YZOpenSDK.xBei.Youzan {
         }
 
         public override string ToString() => ToJson(Formatting.Indented);
+
+        public bool HasError() => ErrorResponse?.Code > 0;
     }
     public class ErrorResponseModel {
         [JsonProperty("code")]

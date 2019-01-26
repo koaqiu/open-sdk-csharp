@@ -14,11 +14,24 @@ namespace YZOpenSDK.xBei.Youzan.Params {
             var sku = SkuBuilder.Parse(SkuStocks);
             if (sku != null) {
                 if (sku.Items?.Count < 1) {
-                    throw new Exception("参数“SkuStocks”不合法！，推荐使用“SkuBuilder”创建");
+                    throw new Exception("参数“SkuStocks”不合法！推荐使用“SkuBuilder”创建");
                 }
                 if (!string.IsNullOrWhiteSpace(SkuImages)) {
                     // 检查SKU图片
-
+                    var sukImags = SkuImageBuilder.Parse(SkuImages);
+                    var values = sukImags.Items?.Select(img => img.Value).Distinct().ToList();
+                    if (values?.Count() < 1) {
+                        throw new Exception("参数“SkuImages”不合法！推荐使用“SkuImageBuilder”创建");
+                    }
+                    // ReSharper disable once AssignNullToNotNullAttribute
+                    var skuValues = sku.Items.Select(item => item.SkuList.First().Value).Distinct().ToList();
+                    // 只支持第一级规格图片，规格图片与第一级规格参数不匹配，请修改参数
+                    if (skuValues.Count() != values?.Count()) {
+                        throw new Exception("参数“SkuImages”不合法！规格图片与第一级规格参数数量不符，推荐使用“SkuImageBuilder”创建");
+                    }
+                    if (!skuValues.All(key => values.Contains(key))) {
+                        throw new Exception("参数“SkuImages”不合法！规格图片与第一级规格参数不符，推荐使用“SkuImageBuilder”创建");
+                    }
                 }
 
                 if (!string.IsNullOrWhiteSpace(SkuWeight)) {

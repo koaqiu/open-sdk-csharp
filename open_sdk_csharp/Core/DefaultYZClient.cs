@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using YZOpenSDK.Entrys;
 using YZOpenSDK.xBei.Helper;
 
@@ -34,20 +35,21 @@ namespace YZOpenSDK {
             );
         }
         public string Invoke(string apiName, string version, string method, IDictionary<string, object> apiParams, IEnumerable<KeyValuePair<string, UploadFile>> files) {
+            return InvokeAsync(apiName, version, method, apiParams, files).Result;
+        }
+
+        public async Task<string> InvokeAsync(string apiName, string version, string method, IDictionary<string, object> apiParams, IEnumerable<KeyValuePair<string, UploadFile>> files) {
             if (string.IsNullOrWhiteSpace(apiName)) {
                 throw new YZException("apiName CAN NOT be null!");
             }
-            IDictionary<string, string> allParams = new Dictionary<string, string>();
-            foreach (var item in apiParams) {
-                var val = item.Value.ToString();
-                if (item.Value is DateTime) {
-                    val = $"{item.Value:yyyy-MM-dd HH:mm:ss}";
-                }
-                allParams.Add(item.Key, val);
-            }
-            var idx = apiName.LastIndexOf(".", StringComparison.Ordinal);
-            var service = apiName.Substring(0, idx);
-            var action = apiName.Substring(idx + 1, apiName.Length - (idx + 1));
+
+            var allParams = apiParams.Select(item =>
+                new KeyValuePair<string, string>(item.Key, item.Value is DateTime ? $"{item.Value:yyyy-MM-dd HH:mm:ss}" : item.Value.ToString())
+            ).ToDictionary(item => item.Key, item => item.Value);
+
+            var apiNamePart = apiName.Split('.');
+            var action = apiNamePart.Last();
+            var service = string.Join('.', apiNamePart, 0, apiNamePart.Length - 1);
 
             var url = "https://open.youzan.com/api";
 
@@ -58,17 +60,20 @@ namespace YZOpenSDK {
                     break;
                 case Token myAuth:
                     url += "/oauthentry";
-                    allParams.Add("access_token", myAuth.GetToken());
+                    var token = myAuth.GetToken();
+                    if (string.IsNullOrWhiteSpace(token)) {
+                        return "{\"error_response\":{\"code\":40009,\"msg\":\"参数 token 无效\",\"sub_code\":0,\"sub_data\":null,\"sub_msg\":null}}";
+                    }
+                    allParams.Add("access_token", token);
                     break;
                 default:
                     throw new YZException("Auth type not supported");
             }
             url += "/" + service + "/" + version + "/" + action;
 
-            return SendRequest(url, method, allParams, files?.ToList());
+            return await SendRequestAsync(url, method, allParams, files?.ToList());
         }
-
-        private string SendRequest(string url, string method, IDictionary<string, string> apiParams, IList<KeyValuePair<string, UploadFile>> files) {
+        private async Task<string> SendRequestAsync(string url, string method, IDictionary<string, string> apiParams, IList<KeyValuePair<string, UploadFile>> files) {
             var httpClient = HttpClientService.GetClient();
             httpClient.DefaultRequestHeaders.Add("User-Agent", "X-YZ-Client 2.0.0 - CSharp");
             var builder = new UriBuilder(url);
@@ -79,10 +84,10 @@ namespace YZOpenSDK {
                 }
                 builder.Query = query.ToString();
                 var reqUrl = builder.ToString();
-                var getResult = httpClient.GetAsync(reqUrl).Result;
+                var getResult = await httpClient.GetAsync(reqUrl);
                 //Console.WriteLine(reqUrl);
                 if (getResult.IsSuccessStatusCode) {
-                    return getResult.Content.ReadAsStringAsync().Result;
+                    return await getResult.Content.ReadAsStringAsync();
                 }
                 throw new YZException("Internal server error, code: " + getResult.StatusCode);
             }
@@ -106,16 +111,15 @@ namespace YZOpenSDK {
                 form = new FormUrlEncodedContent(apiParams);
             }
 
-            var postResult = httpClient.PostAsync(url, form).Result;
+            var postResult = await httpClient.PostAsync(url, form);
             if (postResult.IsSuccessStatusCode) {
-                return postResult.Content.ReadAsStringAsync().Result;
+                return await postResult.Content.ReadAsStringAsync();
             }
             throw new YZException("Internal server error, code: " + postResult.StatusCode);
         }
-
-        private IDictionary<string, string> GetSign(IDictionary<string, string> apiParams) {
+        private Dictionary<string, string> GetSign(IDictionary<string, string> apiParams) {
             var myAuth = auth as Sign;
-            var paramMap = new SortedDictionary<string, string>();
+            var paramMap = new Dictionary<string, string>();
             var timestamp = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss}";
             paramMap.Add("timestamp", timestamp);
             paramMap.Add("format", "json");

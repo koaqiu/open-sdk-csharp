@@ -11,7 +11,13 @@
     "image_id": 1292808215
   }
 }
-
+{
+  "response": {
+    "image_url": "http://img.yzcdn.cn/upload_files/2019/01/26/FlYQ_FcspKIuFOwND3R7qum6uS-L.jpg",
+    "kdt_id": 42438189,
+    "image_id": 1293905451
+  }
+}
 {
   "response": {
     "categories": [

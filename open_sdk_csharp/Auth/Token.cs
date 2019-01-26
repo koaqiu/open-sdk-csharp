@@ -11,15 +11,22 @@ namespace YZOpenSDK {
         private readonly YouzanConfig _config;
         private AccessToken _token;
         private readonly ICache _cache;
-
+        private static Task<AccessToken> _getTokenTask;
+        private static object lockObj = new object();
         public Token(YouzanConfig config, ICache cache = null) {
             _config = config;
             _cache = cache;
         }
 
         public string GetToken() {
+            if (_token == null) {
+                // Console.WriteLine("get token From Cache");
+                _token = getFromCache();
+            }
+
             if (!isTokenValid(_token)) {
-                _token = getAsync().Result;
+
+                return string.Empty;
             }
             return _token.Token;
         }
@@ -28,11 +35,17 @@ namespace YZOpenSDK {
 
         private static bool isTokenValid(AccessToken token) => token != null && !string.IsNullOrWhiteSpace(token.Token) && token.CreateTime.AddSeconds(token.ExpiresIn - 30) > DateTime.Now;
         private static bool isRefreshTokenValid(AccessToken token) => token != null && !string.IsNullOrWhiteSpace(token.RefreshToken) && token.CreateTime.AddSeconds(RefreshTokenExpiresTime) > DateTime.Now;
-        private async Task<AccessToken> getAsync() {
-            _token = getFromCache();
-            if (isTokenValid(_token)) {
-                return _token;
+        public AccessToken RequestToken() {
+            lock (lockObj) {
+                if (_getTokenTask == null) {
+                    //_getTokenTask = getTokenAsync();
+                    _getTokenTask = new Task<AccessToken>( () => getTokenAsync().Result);
+                    _getTokenTask.Start();
+                }
             }
+            return _getTokenTask.Result;
+        }
+        async Task<AccessToken> getTokenAsync() {
             if (_config.IsISV) {
                 // ISV版本
                 if (isRefreshTokenValid(_token)) {
@@ -57,7 +70,6 @@ namespace YZOpenSDK {
                 _token.CreateTime = DateTime.Now;
                 _cache?.SaveToken(_token);
             }
-
             return _token;
         }
         private string getAuthorizeUrl(string state) {
@@ -81,6 +93,7 @@ namespace YZOpenSDK {
             var response = await httpClient.PostAsync(url, myForm);
             if (response.IsSuccessStatusCode) {
                 var str = await response.Content.ReadAsStringAsync();
+                var error = BaseEntry.FromJson<ErrorEntry>(str);
                 var token = BaseEntry.FromJson<AccessToken>(str);
                 token.CreateTime = DateTime.Now;
                 cache?.SaveToken(token);
