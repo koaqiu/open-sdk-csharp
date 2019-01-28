@@ -5,7 +5,7 @@ namespace YZOpenSDK.xBei.Youzan.Params {
     /// <summary>
     /// 订单搜索
     /// </summary>
-    public class GetSoldTradesParams : ApiParams {
+    public class SearchTradesParams : ApiParams {
         /// <summary>
         /// 买家id
         /// </summary>
