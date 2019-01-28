@@ -2,14 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using YZOpenSDK;
 using YZOpenSDK.Entrys;
 using YZOpenSDK.Util;
 using YZOpenSDK.xBei.Helper;
+using YZOpenSDK.xBei.Youzan;
 using YZOpenSDK.xBei.Youzan.Apis.Goods;
 using YZOpenSDK.xBei.Youzan.Apis.Logistics;
 using YZOpenSDK.xBei.Youzan.Apis.Platform;
+using YZOpenSDK.xBei.Youzan.Entrys;
 using YZOpenSDK.xBei.Youzan.Params;
 using YZOpenSDK.xBei.Youzan.Utils;
 
@@ -32,23 +35,47 @@ namespace TestCore {
                 //    new UploadMaterialsStoragePlatformImg(auth, UploadFile.Create(@"C:\Users\dell\Downloads\6a31436c9bf326ba5721a38dda1103c6.jpg"))
                 //        .Execute();
                 //Console.WriteLine(img);
-                var result = new UpdateItem(auth, new UpdateItemParams() {
-                    ItemId = 451762956,
-                    SkuStocks = new SkuBuilder()
-                        .AddItem(1, 1, new[] { "CPU", "I7", "内存", "8G" })
-                        .AddItem(1, 1, new[] { "CPU", "I6", "内存", "4G" })
-                        .AddItem(1, 1, new[] { "CPU", "I7", "内存", "4G" })
-                        .AddItem(1, 1, new[] { "CPU", "I6", "内存", "8G" })
-                        .ToJson(),
-                    SkuImages = new SkuImageBuilder()
-                        .AddItem("8G", "http://www.cgart.cn/zt/ANNI/food/kaffe_2000X2000.png")
-                        .AddItem("4G","1293905451")
-                        .ToJson(),
-                    Cid = 3000000,
-                    IsDisplay = 1,
-                }).Execute();
-                Console.WriteLine(result);
+                // testGetItem(auth, 451762956).Wait();
+                //var result = new UpdateItem(auth, new UpdateItemParams() {
+                //    ItemId = 451762956,
+                //    SkuStocks = new SkuBuilder()
+                //        .AddItem(1, 1, new[] { "CPU", "I7", "内存", "8G" })
+                //        .AddItem(1, 1, new[] { "CPU", "I6", "内存", "4G" })
+                //        .AddItem(1, 1, new[] { "CPU", "I7", "内存", "4G" })
+                //        .AddItem(1, 1, new[] { "CPU", "I6", "内存", "8G" })
+                //        .ToJson(),
+                //    SkuImages = new SkuImageBuilder()
+                //        .AddItem("8G", "http://www.cgart.cn/zt/ANNI/food/kaffe_2000X2000.png")
+                //        .AddItem("4G","1293905451")
+                //        .ToJson(),
+                //    Cid = 3000000,
+                //    IsDisplay = 1,
+                //}).Execute();
+                //Console.WriteLine(result);
+                for (int i = 0; i < 399; i++) {
+                    MessageHanderFactory.AddQueue(new MsgPushEntity() {
+                        MsgId = $"{DateTime.Now.Ticks}",
+                        Type = "ITEM_STATE"
+                    });
+                }
 
+                Task.Run(() => {
+                    for (var j = 0; j < 12; j++) {
+                        Thread.Sleep(1000);
+                        var length = (new Random()).Next(10, 99);
+                        for (int i = 0; i < length; i++) {
+                            MessageHanderFactory.AddQueue(new MsgPushEntity() {
+                                MsgId = $"{DateTime.Now.Ticks}",
+                                Type = "ITEM_STATE"
+                            });
+                        }
+                    }
+                });
+                Task.Run(() => {
+                    while (MessageHanderFactory.QueueCount > 0) {
+                        Thread.Sleep(1000);
+                    }
+                }).Wait();
             } catch (Exception ex) {
                 Console.WriteLine("发生错误：");
                 Console.WriteLine(ex.Message);
@@ -104,10 +131,10 @@ namespace TestCore {
             }).Execute();
             Console.WriteLine(result);
         }
-        private static Task testGetItem(Auth auth) {
+        private static Task testGetItem(Auth auth, int itemId) {
             return Task.Run(async () => {
                 var result = await new GetItem(auth, new GetItemParams {
-                    ItemId = 451708760
+                    ItemId = itemId // 451708760
                 }).ExecuteAsync();
                 Console.WriteLine("RUN testGetItem OK:");
                 Console.WriteLine(result);

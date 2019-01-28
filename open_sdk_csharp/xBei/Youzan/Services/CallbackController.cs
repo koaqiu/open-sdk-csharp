@@ -44,7 +44,7 @@ namespace YZOpenSDK.xBei.Youzan.Services {
         private void handlerAsync(MsgPushEntity msg) {
             if (msg.Test || msg.Mode != 1) return;
             if (!msg.CheckSign(_config)) return;
-
+            MessageHanderFactory.AddQueue(msg);
         }
     }
 }
