@@ -1,18 +1,14 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using YZOpenSDK;
 using YZOpenSDK.Entrys;
 using YZOpenSDK.Util;
 using YZOpenSDK.xBei.Helper;
-using YZOpenSDK.xBei.Youzan;
 using YZOpenSDK.xBei.Youzan.Apis.Goods;
 using YZOpenSDK.xBei.Youzan.Apis.Logistics;
 using YZOpenSDK.xBei.Youzan.Apis.Platform;
-using YZOpenSDK.xBei.Youzan.Entrys;
 using YZOpenSDK.xBei.Youzan.Params;
 using YZOpenSDK.xBei.Youzan.Utils;
 
@@ -52,30 +48,7 @@ namespace TestCore {
                 //    IsDisplay = 1,
                 //}).Execute();
                 //Console.WriteLine(result);
-                for (int i = 0; i < 399; i++) {
-                    MessageHanderFactory.AddQueue(new MsgPushEntity() {
-                        MsgId = $"{DateTime.Now.Ticks}",
-                        Type = "ITEM_STATE"
-                    });
-                }
-
-                Task.Run(() => {
-                    for (var j = 0; j < 12; j++) {
-                        Thread.Sleep(1000);
-                        var length = (new Random()).Next(10, 99);
-                        for (int i = 0; i < length; i++) {
-                            MessageHanderFactory.AddQueue(new MsgPushEntity() {
-                                MsgId = $"{DateTime.Now.Ticks}",
-                                Type = "ITEM_STATE"
-                            });
-                        }
-                    }
-                });
-                Task.Run(() => {
-                    while (MessageHanderFactory.QueueCount > 0) {
-                        Thread.Sleep(1000);
-                    }
-                }).Wait();
+   
             } catch (Exception ex) {
                 Console.WriteLine("发生错误：");
                 Console.WriteLine(ex.Message);

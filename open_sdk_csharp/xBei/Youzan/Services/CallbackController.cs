@@ -28,20 +28,15 @@ namespace YZOpenSDK.xBei.Youzan.Services {
         /// <param name="msg"></param>
         /// <returns></returns>
         [HttpPost("msg")]
-        public async Task<ActionResult> PushMsg([FromBody] MsgPushEntity msg) {
-            await Task.Run(() => {
-                try {
-                    handlerAsync(msg);
-                } catch {
-                    // do nothing
-                }
-            });
+        public ActionResult PushMsg([FromBody] MsgPushEntity msg) {
+            try {
+                handler(msg);
+            } catch {
+                // do nothing
+            }
             return new JsonResult(new { code = 0, msg = "success" });
         }
         private void handler(MsgPushEntity msg) {
-            Task.Run(() => handlerAsync(msg));
-        }
-        private void handlerAsync(MsgPushEntity msg) {
             if (msg.Test || msg.Mode != 1) return;
             if (!msg.CheckSign(_config)) return;
             MessageHanderFactory.AddQueue(msg);
